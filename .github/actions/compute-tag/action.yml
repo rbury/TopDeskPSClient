@@ -1,0 +1,38 @@
+name: Compute Tag
+description: Compute the next tag based on the previous tag and the version scheme
+author: Craig Day
+branding:
+  color: purple
+  icon: tag
+
+runs:
+  using: node12
+  main: action.js
+
+inputs:
+  github_token:
+    description: A Github token for the repo, usually `{{ github.token }}`.
+    required: true
+  tag:
+    description: >
+      A manual tag to compute the next version of. If not specified, it will fetch the most recent
+      tag for the repo.
+    required: false
+  version_scheme:
+    description: The versioning scheme to use. Currently only supports `continuous` or `semantic`.
+    required: false
+    default: semantic
+  version_type:
+    description: Is this a major, minor, patch, or prerelease bump?
+    required: false
+    default: prerelease
+  prerelease_suffix:
+    description: What to annotate a prerelease version tag with.
+    required: false
+    default: 'beta'
+
+outputs:
+  next_tag:
+    description: The computed next tag to be created
+  previous_tag:
+    description: The tag that was used to compute next_tag

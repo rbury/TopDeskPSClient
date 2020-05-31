@@ -1,0 +1,115 @@
+name: Test
+
+env:
+  RequiredModules: "InvokeBuild;5.6.0,Pester;5.0.1,BuildHelpers;2.0.11"
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+on:
+  push:
+    branches-ignore:
+      - master
+    paths-ignore:
+      - '**/Docs'
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitattributes'
+
+  pull_request:
+    types:
+      [opened,edited,reopened]
+    branches:
+      - master
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        OS: [ubuntu-latest, windows-latest]
+    # Push that contains GH_TEST in comment
+    if: ( (contains(github.event.commits[0].message, 'GH_TEST')) || (github.event_name == 'pull_request') )
+    # Job Name
+    name: Build and Test Project
+    # Runs On
+    runs-on: ${{ matrix.os }}
+    steps:
+
+      # Check out repository to host
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      # Set Build Environment variables
+      - name: Set Build variables
+        run: |
+              $Modules = "${{ env.RequiredModules }}" -Split ','
+              $Policy = (Get-PSRepository PSGallery).InstallationPolicy
+              Set-PSRepository PSGallery -InstallationPolicy Trusted
+              $Modules | ForEach-Object {
+                $Name = $_.split(';')[0]
+                $Version = $_.split(';')[1]
+                if ( !( ($null -eq (Get-Module -Name $Name -ListAvailable)) ) ) {
+                  if ((Get-Module -Name $Name -ListAvailable).Version.ToString() -ne $Version) {
+                    #Install version
+                    try {
+                      Write-Warning ("Removing {0}`r`nVersion {1}`r`n Looking for {2}" -f $Name,((Get-Module -Name $Name -ListAvailable).Version.ToString()),$Version)
+                      [MIcrosoft.Powershell.Commands.ModuleSpecification]$ModSpec = @{ ModuleName = $Name; RequiredVersion = (Get-Module -Name $Name -ListAvailable).Version.ToString() }
+                      Remove-Module -FullyQualifiedName $ModSpec -Confirm:$false -ErrorAction SilentlyContinue
+                    }
+                    catch {
+                      $thiserror = $_
+                      Write-Warning ("Problem unloading module: {0} `r`n{1}" -f ($thiserror.Exception.Message),($thiserror.ScriptStackTrace))
+                    }
+                    Install-Module -Name $Name -RequiredVersion $Version -Scope CurrentUser -Repository PSGallery -SkipPublisherCheck -ErrorAction SilentlyContinue -Force
+                  }
+                }
+                else {
+                  #Install new
+                  Install-Module -Name $Name -RequiredVersion $Version -Scope CurrentUser -Repository PSGallery -SkipPublisherCheck -ErrorAction SilentlyContinue -Force
+                }
+              }
+              Set-PSRepository PSGallery -InstallationPolicy $Policy
+              $Modules | ForEach-Object { Import-Module -Name $_.split(';')[0] -RequiredVersion $_.split(';')[1] }
+              $buildenv = Get-BuildEnvironment
+              $buildvars = ($buildenv | Get-Member -MemberType NoteProperty).name
+              $buildvars | ForEach-Object {
+                Write-Output ("::set-env name={0}::{1}" -f $_,($buildenv.$_))
+              }
+        shell: pwsh
+
+      # List env variables
+      - name: List Evnironment
+        run: Get-item 'env:*'
+        shell: pwsh
+
+      # Run Build Task
+      - name: Build Project
+        run: ./build.ps1 -Task 'testBuild'
+        shell: pwsh
+
+      # Run PSScriptAnalyzer
+      - name: Analyze Linux
+        if: (matrix.os == 'ubuntu-latest')
+        uses: devblackops/github-action-psscriptanalyzer@master
+        with:
+          rootPath: BuildOutput
+          settingsPath: pssa_settings.psd1
+          sendComment: true
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          failOnErrors: true
+          failOnWarnings: true
+          failOnInfos: true
+
+      # Run Tests
+      - name: Run Tests
+        run: ./build.ps1 -Task 'Test'
+        shell: pwsh
+
+      # Upload the action details artifact, this is helpful for exploring data included in triggered event
+      - name: Upload Event Details Linux
+        # Only need one copy of event
+        if: (matrix.os == 'ubuntu-latest')
+        uses: actions/upload-artifact@v2
+        with:
+          name: ActionDetail
+          path: ${{ github.event_path }}
