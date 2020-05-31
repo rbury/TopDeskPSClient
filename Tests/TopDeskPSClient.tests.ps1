@@ -1,7 +1,7 @@
-Import-Module $PSScriptRoot\..\MyProject\MyProject.psd1 -Force
+Import-Module $PSScriptRoot\..\TopDeskPSClient\TopDeskPSClient.psd1 -Force
 
 Describe Get-Test {
-    InModuleScope -ModuleName MyProject {
+    InModuleScope -ModuleName TopDeskPSClient {
 
         Context "Perform Test" {
             It "Returns $true" {

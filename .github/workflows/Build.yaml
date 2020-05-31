@@ -224,7 +224,7 @@ jobs:
           release_name: ${{ env.ProjectName }} ${{ steps.compute_tag.outputs.previous_tag }}
           body: >
             Automatic release of ${{ steps.compute_tag.outputs.previous_tag }}
-          draft: false
+          draft: true
           prerelease: true
 
       # Upload the downloaded artificat to release

@@ -1,3 +1,3 @@
-# PowerShell Module Template
+# TopDeskPSClient
 
-Repository setup as template for creating Powershell Modules, including GitHub Actions for testing and releasing (GH Release)
+Powershell Module to interact with [TopDesk API](https://developers.topdesk.com/)
