@@ -1,6 +1,6 @@
 <#
 .Synopsis
-	Build script (https://github.com/rbury/PSModuleTemplate)
+	Build script (https://github.com/rbury/TopDeskPSClient)
 #>
 
 task regularBuild {
