@@ -208,7 +208,7 @@ jobs:
       # Set Release Notes
       - name: Set Release Notes
         run: |
-          $rn = ((Get-Content -Path ./ReleaseNotes.md) -Replace '## v0.0.0',('## '+$env:PROJECT_VERSION))
+          $rn = ((((Get-Content -Path ./ReleaseNotes.md) -Replace '## v0.0.0',('## '+$env:PROJECT_VERSION)) -Replace '%','%25') -Replace '\n','%0A') -Replace '\r','%0D'
           Write-Output ("::set-env name=RELEASE_NOTES::{0}" -f ($rn))
         shell: pwsh
 
