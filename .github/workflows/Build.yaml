@@ -8,6 +8,10 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'Docs/**'
+      - 'Tests/**'
+      - '**.md'
 
 jobs:
   build:

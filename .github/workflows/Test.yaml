@@ -10,7 +10,7 @@ on:
       - master
     paths-ignore:
       - '**/Docs'
-      - 'README.md'
+      - '**.md'
       - 'LICENSE'
       - '.gitattributes'
 
