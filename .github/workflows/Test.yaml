@@ -91,15 +91,6 @@ jobs:
           Write-Output ("::set-env name=RELEASE_NOTES::{0}" -f ($rn))
         shell: pwsh
 
-      # Set Relase Notes test
-      - name: Set Release Notes test
-        #$rnn = (Get-Content -Path ./ReleaseNoates.md) -Replace '## v0.0.0',('## '+$env:PROJECT_VERSION)
-        run: |
-          PROJECT_VERSION="${PROJECT_VERSION//'%'/'%25'}"
-          PROJECT_VERSION="${PROJECT_VERSION//$'\n'/'%0A'}"
-          PROJECT_VERSION="${PROJECT_VERSION//$'\r'/'%0D'}"
-          echo "::set-output name=value::$PROJECT_VERSION"
-
       # List env variables
       - name: List Evnironment
         run: Get-item 'env:*'
