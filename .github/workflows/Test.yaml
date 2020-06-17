@@ -83,6 +83,13 @@ jobs:
                 Write-Output ("::set-env name={0}::{1}" -f $_,($buildenv.$_))
               }
         shell: pwsh
+      
+      # Set Release Notes
+      - name: Set Release Notes
+        run: |
+          $rn = (Get-Content -Path ./ReleaseNotes.md) -Replace '## v0.0.0',('## '+$env:PROJECT_VERSION)
+          Write-Output ("::set-env name=RELEASE_NOTES::{1}" -f ($rn))
+        shell: pwsh
 
       # List env variables
       - name: List Evnironment
