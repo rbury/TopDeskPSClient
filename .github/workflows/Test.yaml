@@ -19,6 +19,11 @@ on:
       [opened,edited,reopened]
     branches:
       - master
+    paths-ignore:
+      - '**/Docs'
+      - '**.md'
+      - 'LICENSE'
+      - '.gitattributes'
 
 jobs:
   test:
