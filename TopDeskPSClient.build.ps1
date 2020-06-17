@@ -30,7 +30,7 @@ task regularBuild {
     $newversion = (($env:PROJECT_VERSION -split '-')[0]).Replace('v', '')
     Set-ModuleFunction -Name "$env:BuildOutput/$env:ProjectName.psd1" -FunctionsToExport $PublicFunctions
     Update-Metadata -Path "$env:BuildOutput/$env:ProjectName.psd1" -PropertyName ModuleVersion -Value $newversion
-    $ReleaseNotes = (Get-Content -Path "$env:ProjectName/ReleaseNotes.md") -replace '## v0.0.0','## v'+$newversion
+    $ReleaseNotes = (Get-Content -Path "./ReleaseNotes.md") -replace '## v0.0.0','## v'+$newversion
     Update-Metadata -Path "$env:BuildOutput/$env:ProjectName.psd1" -PropertyName ReleaseNotes -Value $ReleaseNotes
 }
 
