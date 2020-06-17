@@ -234,7 +234,7 @@ jobs:
       # Create a new GitHub release
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@v1.1.1
         env:
           GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
         with:
