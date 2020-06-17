@@ -207,7 +207,14 @@ jobs:
 
       # Set Release Notes
       - name: Set Release Notes
-        run: echo "::set-env name=RELEASE_NOTES::$((Get-Content -Path ./ReleaseNotes.md) -replace '## v0.0.0',('## '+$env:PROJECT_VERSION))"
+        run: |
+          $rn = (Get-Content -Path ./ReleaseNotes.md) -Replace '## v0.0.0',('## '+$env:PROJECT_VERSION)
+          echo "::set-env name=RELEASE_NOTES::$rn"
+        shell: pwsh
+
+      # List env variables
+      - name: List Evnironment
+        run: Get-item 'env:*'
         shell: pwsh
 
       # Download artifact uploaded by build
