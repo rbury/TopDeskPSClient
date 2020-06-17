@@ -234,8 +234,7 @@ jobs:
           tag_name: ${{ steps.compute_tag.outputs.previous_tag }}
           release_name: ${{ env.ProjectName }} ${{ steps.compute_tag.outputs.previous_tag }}
           body: >
-            Automatic release of ${{ steps.compute_tag.outputs.previous_tag }}
-            ${{ env:RELEASE_NOTES }}
+            Automatic release of ${{ steps.compute_tag.outputs.previous_tag }}${{ env:RELEASE_NOTES }}
           draft: true
           prerelease: true
 
