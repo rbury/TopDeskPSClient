@@ -205,6 +205,11 @@ jobs:
           }
         shell: pwsh
 
+      # Set Release Notes
+      - name: Set Release Notes
+        run: echo "::set-env name=RELEASE_NOTES::$((Get-Content -Path ./ReleaseNotes.md) -replace '## v0.0.0',('## '+$env:PROJECT_VERSION))"
+        shell: pwsh
+
       # Download artifact uploaded by build
       - name: Download Archive
         uses: actions/download-artifact@v2
@@ -230,6 +235,7 @@ jobs:
           release_name: ${{ env.ProjectName }} ${{ steps.compute_tag.outputs.previous_tag }}
           body: >
             Automatic release of ${{ steps.compute_tag.outputs.previous_tag }}
+            ${{ env:RELEASE_NOTES }}
           draft: true
           prerelease: true
 
