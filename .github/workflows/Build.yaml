@@ -205,6 +205,20 @@ jobs:
           }
         shell: pwsh
 
+      # Compute next Tag, defaults specified for clarity, version types - (major, minor, patch, prerelease, premajor)
+      - id: Compute_ReleaseTag
+        #uses: craig-day/compute-tag@08233c8e763aa357c7930adf553f5b2cd8d29d1b
+        uses: ./.github/actions/compute-tag
+        with:
+          github_token: ${{ secrets.MY_TOKEN }}
+          version_scheme: semantic # continuous, semantic
+          version_type: prerelease # major, minor, patch, prerelease, premajor
+          prerelease_suffix: beta # the suffix added to a prerelease tag, if none already exists.
+
+      # Set Version
+      - name: Set Version
+        run: echo "::set-env name=PROJECT_VERSION::"${{ steps.compute_releasetag.outputs.previous_tag }}
+
       # Set Release Notes
       - name: Set Release Notes
         run: |
