@@ -208,7 +208,7 @@ jobs:
       # Set Release Notes
       - name: Set Release Notes
         run: |
-          $rn = (Get-Content -Path ./ReleaseNotes.md -Raw) -Replace '## v0.0.0',('## '+$env:PROJECT_VERSION)
+          $rn = ((Get-Content -Path ./ReleaseNotes.md) -Replace '## v0.0.0',('## '+$env:PROJECT_VERSION))
           Write-Output ("::set-env name=RELEASE_NOTES::{0}" -f ($rn))
         shell: pwsh
 
@@ -240,8 +240,9 @@ jobs:
         with:
           tag_name: ${{ steps.compute_tag.outputs.previous_tag }}
           release_name: ${{ env.ProjectName }} ${{ steps.compute_tag.outputs.previous_tag }}
-          body: >
-            Automatic release of ${{ steps.compute_tag.outputs.previous_tag }}${{ env.RELEASE_NOTES }}
+          body: |
+            Automatic release of ${{ steps.compute_tag.outputs.previous_tag }}
+            ${{ env.RELEASE_NOTES }}
           draft: true
           prerelease: true
 
