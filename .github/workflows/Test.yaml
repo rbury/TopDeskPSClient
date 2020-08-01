@@ -55,20 +55,24 @@ jobs:
               $Modules | ForEach-Object {
                 $Name = $_.split(';')[0]
                 $Version = $_.split(';')[1]
-                if ( !( ($null -eq (Get-Module -Name $Name -ListAvailable)) ) ) {
-                  if ((Get-Module -Name $Name -ListAvailable).Version.ToString() -ne $Version) {
-                    #Install version
-                    try {
-                      Write-Warning ("Removing {0}`r`nVersion {1}`r`n Looking for {2}" -f $Name,((Get-Module -Name $Name -ListAvailable).Version.ToString()),$Version)
-                      [MIcrosoft.Powershell.Commands.ModuleSpecification]$ModSpec = @{ ModuleName = $Name; RequiredVersion = (Get-Module -Name $Name -ListAvailable).Version.ToString() }
-                      Remove-Module -FullyQualifiedName $ModSpec -Confirm:$false -ErrorAction SilentlyContinue
-                    }
-                    catch {
-                      $thiserror = $_
-                      Write-Warning ("Problem unloading module: {0} `r`n{1}" -f ($thiserror.Exception.Message),($thiserror.ScriptStackTrace))
-                    }
-                    Install-Module -Name $Name -RequiredVersion $Version -Scope CurrentUser -Repository PSGallery -SkipPublisherCheck -ErrorAction SilentlyContinue -Force
+                if (!($null -eq (Get-Module -Name $Name -ListAvailable))) {
+                  $CurrentVersion = (Get-Module -Name $Name -Listavailable).Version.ToString()
+                }
+                else {
+                  $CurrentVersion = -1
+                }
+                if (($CurrentVersion -ne $Version) -and ($CurrentVersion -ne -1)) {
+                  #Install version
+                  try {
+                    Write-Warning ("Removing {0}`r`nVersion {1}`r`n Looking for {2}" -f $Name,$CurrentVersion,$Version)
+                    [MIcrosoft.Powershell.Commands.ModuleSpecification]$ModSpec = @{ ModuleName = $Name; RequiredVersion = $CurrentVersion }
+                    Remove-Module -FullyQualifiedName $ModSpec -Confirm:$false -ErrorAction SilentlyContinue
                   }
+                  catch {
+                    $thiserror = $_
+                    Write-Warning ("Problem unloading module: {0} `r`n{1}" -f ($thiserror.Exception.Message),($thiserror.ScriptStackTrace))
+                  }
+                  Install-Module -Name $Name -RequiredVersion $Version -Scope CurrentUser -Repository PSGallery -SkipPublisherCheck -ErrorAction SilentlyContinue -Force
                 }
                 else {
                   #Install new
