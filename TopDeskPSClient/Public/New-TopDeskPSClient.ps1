@@ -1,6 +1,7 @@
 function New-TopDeskPSClient {
     [cmdletBinding(DefaultParameterSetName = 'url',
         PositionalBinding = $false,
+        SupportsShouldProcess,
         ConfirmImpact = 'Low')]
     [OutputType([psobject])]
     param (
@@ -33,7 +34,17 @@ function New-TopDeskPSClient {
         $Save
     )
 
-    Begin {}
+    Begin {
+        if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+            $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
+        }
+        if (-not $PSBoundParameters.ContainsKey('Confirm')) {
+            $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
+        }
+        if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
+            $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+        }
+    }
     Process {
 
         switch ($PSCmdlet.ParameterSetName) {
@@ -45,15 +56,17 @@ function New-TopDeskPSClient {
             }
             'url' {
                 if ($Save) {
-                    return [TopDeskPSClient]::new($url, $PSCredential, $true)
+                    if ($PSCmdlet.ShouldProcess('New TopDeskClient', 'Save Credentials')) {
+                            return [TopDeskPSClient]::new($url, $PSCredential, $true)
+                        }
+                    }
+                    else {
+                        return [TopDeskPSClient]::new($url, $PSCredential)
+                    }
+                    break
                 }
-                else {
-                    return [TopDeskPSClient]::new($url, $PSCredential)
-                }
-                break
             }
         }
-    }
-    End {}
+        End {}
 
-}
+    }
