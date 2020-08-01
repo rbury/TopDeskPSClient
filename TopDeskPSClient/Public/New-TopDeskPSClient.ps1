@@ -1,7 +1,7 @@
 function New-TopDeskPSClient {
     [cmdletBinding(DefaultParameterSetName = 'url',
         PositionalBinding = $false,
-        ConfirmImpact = 'Medium')]
+        ConfirmImpact = 'Low')]
     [OutputType([psobject])]
     param (
         [Parameter(Mandatory = $true,
@@ -33,20 +33,27 @@ function New-TopDeskPSClient {
         $Save
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'load' {
-            return [TopDeskPSClient]::new($url, $true, $true)
-            break
-        }
-        'url' {
-            if ($Save) {
-                return [TopDeskPSClient]::new($url, $PSCredential, $true)
+    Begin {}
+    Process {
+
+        switch ($PSCmdlet.ParameterSetName) {
+            'load' {
+                if ($Load) {
+                    return [TopDeskPSClient]::new($url, $true, $true)
+                    break
+                }
             }
-            else {
-                return [TopDeskPSClient]::new($url, $PSCredential)
+            'url' {
+                if ($Save) {
+                    return [TopDeskPSClient]::new($url, $PSCredential, $true)
+                }
+                else {
+                    return [TopDeskPSClient]::new($url, $PSCredential)
+                }
+                break
             }
-            break
         }
     }
+    End {}
 
 }
