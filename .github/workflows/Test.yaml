@@ -1,7 +1,7 @@
 name: Test
 
 env:
-  RequiredModules: "InvokeBuild;5.6.0,Pester;5.0.1,BuildHelpers;2.0.11"
+  RequiredModules: "InvokeBuild;5.6.0,Pester;5.0.2,BuildHelpers;2.0.11"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 on:
@@ -57,7 +57,7 @@ jobs:
                 $Name = $_.split(';')[0]
                 $Version = $_.split(';')[1]
                 if (!($null -eq (Get-Module -Name $Name -ListAvailable))) {
-                  $CurrentVersion = (Get-Module -Name $Name -Listavailable).Version.ToString()
+                  $CurrentVersion = (Get-Module -Name $Name -Listavailable).Version
                 }
                 else {
                   $CurrentVersion = -1
@@ -65,7 +65,7 @@ jobs:
                 if (($CurrentVersion -ne $Version) -and ($CurrentVersion -ne -1)) {
                   #Install version
                   try {
-                    Write-Warning ("Removing {0}`r`nVersion {1}`r`n Looking for {2}" -f $Name,$CurrentVersion,$Version)
+                    Write-Warning ("Removing {0}`r`nVersion {1}`r`n Looking for {2}" -f $Name,($CurrentVersion.ToString()),$Version)
                     [MIcrosoft.Powershell.Commands.ModuleSpecification]$ModSpec = @{ ModuleName = $Name; RequiredVersion = $CurrentVersion }
                     Remove-Module -FullyQualifiedName $ModSpec -Confirm:$false -ErrorAction SilentlyContinue
                   }

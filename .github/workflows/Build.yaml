@@ -2,7 +2,7 @@ name: CICD
 
 env:
   GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
-  RequiredModules: "InvokeBuild;5.6.0,Pester;5.0.1,BuildHelpers;2.0.11"
+  RequiredModules: "InvokeBuild;5.6.0,Pester;5.0.2,BuildHelpers;2.0.11"
 
 on:
   push:
@@ -42,15 +42,15 @@ jobs:
             $Name = $_.split(';')[0]
             $Version = $_.split(';')[1]
             if (!($null -eq (Get-Module -Name $Name -ListAvailable))) {
-              $CurrentVersion = (Get-Module -Name $Name -Listavailable).Version.ToString()
+              $CurrentVersion = (Get-Module -Name $Name -Listavailable).Version
             }
             else {
               $CurrentVersion = -1
             }
-            if ((Get-Module -Name $Name -ListAvailable).Version.ToString() -ne $Version) {
+            if (($CurrentVersion -ne $Version) -and ($CurrentVersion -ne -1)) {
               #Install version
               try {
-                Write-Warning ("Removing {0}`r`nVersion {1}`r`n Looking for {2}" -f $Name,$CurrentVersion,$Version)
+                Write-Warning ("Removing {0}`r`nVersion {1}`r`n Looking for {2}" -f $Name,($CurrentVersion.ToString()),$Version)
                 [MIcrosoft.Powershell.Commands.ModuleSpecification]$ModSpec = @{ ModuleName = $Name; RequiredVersion = $CurrentVersion }
                 Remove-Module -FullyQualifiedName $ModSpec -Confirm:$false -ErrorAction SilentlyContinue
               }
