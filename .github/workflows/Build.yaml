@@ -42,12 +42,12 @@ jobs:
             $Name = $_.split(';')[0]
             $Version = $_.split(';')[1]
             if (!($null -eq (Get-Module -Name $Name -ListAvailable))) {
-              $CurrentVersion = (Get-Module -Name $Name -Listavailable).Version
+              [System.Version]$CurrentVersion = (Get-Module -Name $Name -Listavailable).Version | Sort-Object -Descending | Select-Object -First 1
             }
             else {
-              $CurrentVersion = -1
+              [System.Version]$CurrentVersion = [System.Version]::new("0.0.0")
             }
-            if (($CurrentVersion -ne $Version) -and ($CurrentVersion -ne -1)) {
+            if (($CurrentVersion -ne $Version) -and ($CurrentVersion.ToString() -ne "0.0.0")) {
               #Install version
               try {
                 Write-Warning ("Removing {0}`r`nVersion {1}`r`n Looking for {2}" -f $Name,($CurrentVersion.ToString()),$Version)
