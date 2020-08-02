@@ -22,19 +22,14 @@ function Get-APIResponse {
         [TopDeskPSClient]
         $Client,
         # Parameter help description
-        [Parameter(Mandatory = $true,
-            ValueFromPipelineByPropertyName = $true,
-            ParameterSetName = 'Body')]
+        [Parameter(Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string]
         $Body,
         # Parameter help description
-        [Parameter(Mandatory = $true,
-            ValueFromPipelineByPropertyName = $true,
-            ParameterSetName = 'Header')]
         [Parameter(Mandatory = $false,
-            ValueFromPipelineByPropertyName = $true,
-            ParameterSetName = 'Body')]
+            ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [hashtable]
         $Headers
