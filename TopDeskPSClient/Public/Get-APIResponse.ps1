@@ -1,11 +1,19 @@
 function Get-APIResponse {
     [CmdletBinding(PositionalBinding = $false,
+        DefaultParameterSetName = 'Default',
         ConfirmImpact = 'Medium')]
     [OutputType([psobject])]
     param (
         # Parameter help description
         [Parameter(Mandatory = $true,
-            ValueFromPipelineByPropertyName = $true)]
+            ValueFromPipelineByPropertyName = $true,
+            ParameterSetName = 'Body')]
+        [Parameter(Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true,
+            ParameterSetName = 'Header')]
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true,
+            ParameterSetName = 'Method')]
         [ValidateSet('GET', 'PUT', 'POST', 'PATCH', 'DELETE')]
         [string]
         $Method,
@@ -23,12 +31,26 @@ function Get-APIResponse {
         $Client,
         # Parameter help description
         [Parameter(Mandatory = $false,
+            ParameterSetName = 'Body',
+            ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $false,
+            ParameterSetName = 'Header',
+            ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $false,
+            ParameterSetName = 'Method',
             ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string]
         $Body,
         # Parameter help description
         [Parameter(Mandatory = $false,
+            ParameterSetName = 'Body',
+            ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true,
+            ParameterSetName = 'Header',
+            ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $false,
+            ParameterSetName = 'Method',
             ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [hashtable]
@@ -52,8 +74,11 @@ function Get-APIResponse {
                 'Header' {
                     $Client.APICall($Method, $EndPoint, $Headers)
                 }
-                Default {
+                'Method' {
                     $Client.APICall($Method, $EndPoint)
+                }
+                'Default' {
+                    $Client.APICall($EndPoint)
                 }
             }
         }
