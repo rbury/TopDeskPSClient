@@ -156,6 +156,31 @@ Class TopDeskPSClient {
         }
     }
 
+    [psobject] APICall([string]$EndPoint) {
+        if ($this.connected) {
+            $Headers = @{'Authorization' = ('Basic ' + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($this.APICred.UserName + ':' + $this.APICred.GetNetworkCredential().Password))) }
+            $rhv = ""
+            $scv = ""
+            $request = Invoke-RestMethod -Method GET -Uri $($this.url + '/tas/api/' + $EndPoint) -Headers $Headers -ResponseHeadersVariable rhv -StatusCodeVariable scv
+            return @{
+                Name       = 'API Request'
+                Status     = 0
+                Response   = $rhv
+                StatusCode = $scv
+                Data       = $request
+            }
+        }
+        else {
+            return @{
+                Name       = 'API Request'
+                Status     = 1
+                Response   = 'TopDeskPSClient must be connected, use Connect-TopDeskPSClient'
+                StatusCode = $null
+                Data       = $null
+            }
+        }
+    }
+
     [void] LoadConnection() {
         if ($null -ne $this.instance) {
             $_settingPath = "$env:APPDATA/TopDeskPSClient/$($this.instance).bin"
