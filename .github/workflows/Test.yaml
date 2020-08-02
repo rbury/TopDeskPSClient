@@ -60,7 +60,9 @@ jobs:
                 Write-Warning ("Version: {0}" -f $Version)
                 if ($null -ne (Get-Module -Name $Name -ListAvailable)) {
                   Write-Warning ("CurrentVersion: {0}" -f $CurrentVersion)
-                  [System.Version]$CurrentVersion = (Get-Module -Name $Name -Listavailable).Version
+                  $CurrentVersion = (Get-Module -Name $Name -Listavailable).Version
+                  Write-Warning ("CurrentVersion: {0}" -f $CurrentVersion)
+                  Write-Warning ("CV-Type: {0}" -f ($CurrentVersion | Get-Member))
                 }
                 else {
                   Write-Warning ("CurrentVersion set to 0.0.0")
