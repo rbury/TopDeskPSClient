@@ -59,7 +59,7 @@ jobs:
                 $Version = $_.split(';')[1]
                 Write-Warning ("Version: {0}" -f $Version)
                 if ($null -ne (Get-Module -Name $Name -ListAvailable)) {
-                  [System.Version]$CurrentVersion = $CurrentModule.Version | Sort-Object -Descending | Select-Object -First 1
+                  [System.Version]$CurrentVersion = (Get-Module -Name $Name -Listavailable).Version | Sort-Object -Descending | Select-Object -First 1
                   Write-Warning ("CurrentVersion: {0}" -f $CurrentVersion)
                   Write-Warning ("CV-Type: {0}" -f ($currentVersion.GetType().Name))
                 }
