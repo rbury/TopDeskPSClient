@@ -50,6 +50,7 @@ jobs:
       - name: Set Build variables
         run: |
               $Modules = "${{ env.RequiredModules }}" -Split ','
+              Write-Output ("Modules {0}" -f $Modules)
               $Policy = (Get-PSRepository PSGallery).InstallationPolicy
               Set-PSRepository PSGallery -InstallationPolicy Trusted
               $Modules | ForEach-Object {
