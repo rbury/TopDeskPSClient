@@ -9,11 +9,11 @@ on:
     branches:
       - master
     paths-ignore:
-      - 'Docs/**'
-      - 'Tests/**'
-      - '**.md'
-      - '.gitattributes'
-      - '.gitignore'
+      - "Docs/**"
+      - "Tests/**"
+      - "**.md"
+      - ".gitattributes"
+      - ".gitignore"
 
 jobs:
   build:
@@ -26,7 +26,6 @@ jobs:
     # Runs On
     runs-on: ${{ matrix.os }}
     steps:
-
       # Check out repository to host
       - name: Checkout Repo
         uses: actions/checkout@v2
@@ -36,39 +35,43 @@ jobs:
       # Set Build Environment variables
       - name: Set Build variables
         run: |
-              $Modules = "${{ env.RequiredModules }}" -Split ','
-              $Policy = (Get-PSRepository PSGallery).InstallationPolicy
-              Set-PSRepository PSGallery -InstallationPolicy Trusted
-              $Modules | ForEach-Object {
-                $Name = $_.split(';')[0]
-                $Version = $_.split(';')[1]
-                if ( !( ($null -eq (Get-Module -Name $Name -ListAvailable)) ) ) {
-                  if ((Get-Module -Name $Name -ListAvailable).Version.ToString() -ne $Version) {
-                    #Install version
-                    try {
-                      Write-Warning ("Removing {0}`r`nVersion {1}`r`n Looking for {2}" -f $Name,((Get-Module -Name $Name -ListAvailable).Version.ToString()),$Version)
-                      [MIcrosoft.Powershell.Commands.ModuleSpecification]$ModSpec = @{ ModuleName = $Name; RequiredVersion = (Get-Module -Name $Name -ListAvailable).Version.ToString() }
-                      Remove-Module -FullyQualifiedName $ModSpec -Confirm:$false -ErrorAction SilentlyContinue
-                    }
-                    catch {
-                      $thiserror = $_
-                      Write-Warning ("Problem unloading module: {0} `r`n{1}" -f ($thiserror.Exception.Message),($thiserror.ScriptStackTrace))
-                    }
-                    Install-Module -Name $Name -RequiredVersion $Version -Scope CurrentUser -Repository PSGallery -SkipPublisherCheck -ErrorAction SilentlyContinue -Force
-                  }
-                }
-                else {
-                  #Install new
-                  Install-Module -Name $Name -RequiredVersion $Version -Scope CurrentUser -Repository PSGallery -SkipPublisherCheck -ErrorAction SilentlyContinue -Force
-                }
+          $Modules = "${{ env.RequiredModules }}" -Split ','
+          $Policy = (Get-PSRepository PSGallery).InstallationPolicy
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          $Modules | ForEach-Object {
+            $Name = $_.split(';')[0]
+            $Version = $_.split(';')[1]
+            if (!($null -eq (Get-Module -Name $Name -ListAvailable))) {
+              $CurrentVersion = (Get-Module -Name $Name -Listavailable).Version.ToString()
+            }
+            else {
+              $CurrentVersion = -1
+            }
+            if ((Get-Module -Name $Name -ListAvailable).Version.ToString() -ne $Version) {
+              #Install version
+              try {
+                Write-Warning ("Removing {0}`r`nVersion {1}`r`n Looking for {2}" -f $Name,$CurrentVersion,$Version)
+                [MIcrosoft.Powershell.Commands.ModuleSpecification]$ModSpec = @{ ModuleName = $Name; RequiredVersion = $CurrentVersion }
+                Remove-Module -FullyQualifiedName $ModSpec -Confirm:$false -ErrorAction SilentlyContinue
               }
-              Set-PSRepository PSGallery -InstallationPolicy $Policy
-              $Modules | ForEach-Object { Import-Module -Name $_.split(';')[0] -RequiredVersion $_.split(';')[1] }
-              $buildenv = Get-BuildEnvironment
-              $buildvars = ($buildenv | Get-Member -MemberType NoteProperty).name
-              $buildvars | ForEach-Object {
-                Write-Output ("::set-env name={0}::{1}" -f $_,($buildenv.$_))
+              catch {
+                $thiserror = $_
+                Write-Warning ("Problem unloading module: {0} `r`n{1}" -f ($thiserror.Exception.Message),($thiserror.ScriptStackTrace))
               }
+              Install-Module -Name $Name -RequiredVersion $Version -Scope CurrentUser -Repository PSGallery -SkipPublisherCheck -ErrorAction SilentlyContinue -Force
+            }
+            else {
+              #Install new
+              Install-Module -Name $Name -RequiredVersion $Version -Scope CurrentUser -Repository PSGallery -SkipPublisherCheck -ErrorAction SilentlyContinue -Force
+            }
+          }
+          Set-PSRepository PSGallery -InstallationPolicy $Policy
+          $Modules | ForEach-Object { Import-Module -Name $_.split(';')[0] -RequiredVersion $_.split(';')[1] }
+          $buildenv = Get-BuildEnvironment
+          $buildvars = ($buildenv | Get-Member -MemberType NoteProperty).name
+          $buildvars | ForEach-Object {
+            Write-Output ("::set-env name={0}::{1}" -f $_,($buildenv.$_))
+          }
         shell: pwsh
 
       # Compute next Tag, defaults specified for clarity, version types - (major, minor, patch, prerelease, premajor)
@@ -152,15 +155,14 @@ jobs:
           path: ${{ env.BuildOutput }}/${{ env.ProjectName }}.zip
 
   release:
-      # This job requires that build has run
-      needs: build
+    # This job requires that build has run
+    needs: build
 
-      name: Create Release
-      # Runs On
-      runs-on: ubuntu-latest
+    name: Create Release
+    # Runs On
+    runs-on: ubuntu-latest
 
-      steps:
-
+    steps:
       # Check out repository to host
       - name: Checkout Repo
         uses: actions/checkout@v2
