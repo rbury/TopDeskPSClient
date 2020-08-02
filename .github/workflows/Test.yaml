@@ -63,13 +63,9 @@ jobs:
                     Remove-Variable -Name 'CurrentVersion'
                   }
                   $CurrentModule = (Get-Module -Name $Name -Listavailable)
-                  $CurrentVersion = $CurrentModule.Version
+                  $CurrentVersion = [string]$CurrentModule.Version
                   Write-Warning ("CurrentVersion: {0}" -f $CurrentVersion)
-                  Write-Warning ("CurrentVersion string: {0}" -f $CurrentVersion.ToString())
-                  Write-Warning ("CurrentVersion string: {0}" -f ($CurrentModule.Version.ToString()))
                   Write-Warning ("CV-Type: {0}" -f ($currentVersion.GetType().Name))
-                  Write-Warning ("CV-Type: {0}" -f ($CurrentModule.Version.GetType().Name))
-                  $testv = [System.Version]::new($CurrentVersion)
                 }
                 else {
                   Write-Warning ("CurrentVersion set to 0.0.0")
