@@ -1,6 +1,7 @@
 Class TopDeskPSClient {
 
     [string] $version
+    [string] $productversion
     [string] $url
     hidden [bool] $connected
     hidden [string] $instance
@@ -159,8 +160,10 @@ Class TopDeskPSClient {
         if ($null -ne $this.instance) {
             $_settingPath = "$env:APPDATA/TopDeskPSClient/$($this.instance).bin"
             if (Test-Path -Path "$_settingPath" -PathType Leaf) {
+                Write-Verbose ("Importing settings from {0}" -f $_settingPath)
                 $_mySettings = Import-tdObject -FilePath $_settingPath
                 if ($_mySettings.Status -eq 0) {
+                    Write-Verbose ("Settings loaded")
                     $this.APICred = New-Object -TypeName pscredential -ArgumentList @($_mySettings.CRD[0], ($_mySettings.CRD[1] | ConvertTo-SecureString))
                 }
                 else {
@@ -190,15 +193,20 @@ Class TopDeskPSClient {
 
     [bool] Connect() {
         if (($null -ne $this.apicred) -and ($null -ne $this.url)) {
-            $this.connected = $false
+            $this.connected = $true
             $_version = $this.APICall('GET', 'version')
             if ($_version.status -eq 0) {
                 $this.connected = $true
                 $this.version = $_version.data.version
+                $prodVersion = $this.APICall('GET', 'productVersion')
+                $this.productversion = "$($prodVersion.Data.major).$($prodVersion.Data.minor).$($prodVersion.Data.patch)"
                 return $true
             }
             else {
                 $this.connected = $false
+                Write-Verbose ("Connection Failed - status {0}" -f $_version.status)
+                Write-Verbose ("Response: {0}" -f $_version.Response)
+                Write-Verbose ("Data: {0}" -f $_version.Data)
                 return $false
             }
         }

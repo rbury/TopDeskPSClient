@@ -50,7 +50,7 @@ function New-TopDeskPSClient {
         switch ($PSCmdlet.ParameterSetName) {
             'load' {
                 if ($Load) {
-                    return [TopDeskPSClient]::new($url, $true, $true)
+                    return [TopDeskPSClient]::new($url, $true)
                     break
                 }
             }
