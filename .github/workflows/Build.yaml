@@ -36,18 +36,24 @@ jobs:
       - name: Set Build variables
         run: |
           $Modules = "${{ env.RequiredModules }}" -Split ','
+          Write-Output ("Modules {0}" -f $Modules)
           $Policy = (Get-PSRepository PSGallery).InstallationPolicy
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           $Modules | ForEach-Object {
             $Name = $_.split(';')[0]
+            Write-Output ("Name: {0}" -f $Name)
             $Version = $_.split(';')[1]
+            Write-Output ("Version: {0}" -f $Version)
             if (!($null -eq (Get-Module -Name $Name -ListAvailable))) {
               [System.Version]$CurrentVersion = (Get-Module -Name $Name -Listavailable).Version
+              Write-Output ("CurrentVersion: {0}" -f $CurrentVersion)
             }
             else {
+              Write-Output ("CurrentVersion set to 0.0.0")
               [System.Version]$CurrentVersion = [System.Version]::new("0.0.0")
             }
             if (($CurrentVersion -ne $Version) -and ($CurrentVersion.ToString() -ne "0.0.0")) {
+              Write-Output ("Removing current version")
               #Install version
               try {
                 Write-Warning ("Removing {0}`r`nVersion {1}`r`n Looking for {2}" -f $Name,($CurrentVersion.ToString()),$Version)
