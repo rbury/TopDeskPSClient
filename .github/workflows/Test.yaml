@@ -62,7 +62,8 @@ jobs:
                   if(Get-Variable -Name 'CurrentVersion') {
                     Remove-Variable -Name 'CurrentVersion'
                   }
-                  $CurrentVersion = ((Get-Module -Name $Name -Listavailable).Version)
+                  $CurrentModule = (Get-Module -Name $Name -Listavailable)
+                  $CurrentVersion = $CurrentModule.Version
                   Write-Warning ("CurrentVersion: {0}" -f $CurrentVersion)
                   Write-Warning ("CurrentVersion string: {0}" -f $CurrentVersion.ToString())
                   Write-Warning ("CV-Type: {0}" -f ($currentVersion.GetType().Name))
