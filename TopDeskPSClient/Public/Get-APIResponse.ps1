@@ -1,5 +1,6 @@
 function Get-APIResponse {
     [CmdletBinding(PositionalBinding = $false,
+        DefaultParametersetName = 'Default',
         ConfirmImpact = 'Medium')]
     [OutputType([psobject])]
     param (
@@ -18,7 +19,10 @@ function Get-APIResponse {
         # Parameter help description
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true,
-            ParameterSetName='Body')]
+            ParameterSetName = 'Body')]
+        [Parameter(Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true,
+            ParameterSetName = 'Default')]
         [ValidateNotNullOrEmpty()]
         [string]
         $Body,
@@ -45,9 +49,10 @@ function Get-APIResponse {
                     }
                 }
                 Default {
-                    if($PSBoundParameters.ContainsKey('Headers')) {
+                    if ($PSBoundParameters.ContainsKey('Headers')) {
                         $Script:Client.APICall($Method, $EndPoint, $Headers)
-                    } else {
+                    }
+                    else {
                         $Script:Client.APICall($Method, $EndPoint)
                     }
                 }
