@@ -193,10 +193,10 @@ function Get-IncidentList {
     )
     
     begin {
-        $_headerslist = @{
+        [hashtable]$_headerslist = @{
             'Content-Type' = 'application/json'
         }
-        $_endpoint = 'incidents?'
+        [string]$_endpoint = 'incidents?'
     }
     
     process {
@@ -373,7 +373,16 @@ function Get-IncidentList {
                 }
             }
         }
-        Get-APIResponse -Method GET -Endpoint $_endpoint -Headers $_headerslist
+        if($_endpoint.EndsWith('?')) {
+            $_endpoint = $_endpoint.Substring(0,($_endpoint.Length)-1)
+        }
+        Write-Warning ("Endpoint: {0}" -f $_endpoint)
+        $IncidentList = Get-APIResponse -Method GET -Endpoint $_endpoint -Headers $_headerslist -Verbose
+        if(($null -ne $IncidentList) -and (($IncidentList.StatusCode -eq 200) -or ($IncidentList.StatusCode -eq 206))) {
+            return $IncidentList.Data
+        } else {
+            return "Status: $($IncidentList.Status) Response: $($IncidentList.Response) StatusCode: $($IncidentList.StatusCode)"
+        }
     }
     
     end {
