@@ -83,7 +83,7 @@ Class TopDeskPSClient {
         }
     }
 
-    [psobject] APICall([string]$Method, [hashtable]$Headers, [string]$EndPoint) {
+    [psobject] APICall([string]$Method, [string]$EndPoint, [hashtable]$Headers) {
         if ($this.connected) {
             $null = $Headers.Add('Authorization', ('Basic ' + [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($this.APICred.UserName + ':' + $this.APICred.GetNetworkCredential().Password))))
             $rhv = ""

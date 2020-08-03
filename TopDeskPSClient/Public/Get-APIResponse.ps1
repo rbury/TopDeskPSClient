@@ -1,19 +1,12 @@
 function Get-APIResponse {
     [CmdletBinding(PositionalBinding = $false,
-        DefaultParameterSetName = 'Default',
+        DefaultParametersetName = 'Default',
         ConfirmImpact = 'Medium')]
     [OutputType([psobject])]
     param (
         # Parameter help description
         [Parameter(Mandatory = $true,
-            ValueFromPipelineByPropertyName = $true,
-            ParameterSetName = 'Body')]
-        [Parameter(Mandatory = $false,
-            ValueFromPipelineByPropertyName = $true,
-            ParameterSetName = 'Header')]
-        [Parameter(Mandatory = $true,
-            ValueFromPipelineByPropertyName = $true,
-            ParameterSetName = 'Method')]
+            ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('GET', 'PUT', 'POST', 'PATCH', 'DELETE')]
         [string]
         $Method,
@@ -24,27 +17,17 @@ function Get-APIResponse {
         [string]
         $EndPoint,
         # Parameter help description
+        [Parameter(Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true,
+            ParameterSetName = 'Body')]
         [Parameter(Mandatory = $false,
-            ParameterSetName = 'Body',
-            ValueFromPipelineByPropertyName = $true)]
-        [Parameter(Mandatory = $false,
-            ParameterSetName = 'Header',
-            ValueFromPipelineByPropertyName = $true)]
-        [Parameter(Mandatory = $false,
-            ParameterSetName = 'Method',
-            ValueFromPipelineByPropertyName = $true)]
+            ValueFromPipelineByPropertyName = $true,
+            ParameterSetName = 'Default')]
         [ValidateNotNullOrEmpty()]
         [string]
         $Body,
         # Parameter help description
         [Parameter(Mandatory = $false,
-            ParameterSetName = 'Body',
-            ValueFromPipelineByPropertyName = $true)]
-        [Parameter(Mandatory = $true,
-            ParameterSetName = 'Header',
-            ValueFromPipelineByPropertyName = $true)]
-        [Parameter(Mandatory = $false,
-            ParameterSetName = 'Method',
             ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [hashtable]
@@ -65,14 +48,13 @@ function Get-APIResponse {
                         $Script:Client.APICall($Method, $EndPoint, $Body)
                     }
                 }
-                'Header' {
-                    $Script:Client.APICall($Method, $EndPoint, $Headers)
-                }
-                'Method' {
-                    $Script:Client.APICall($Method, $EndPoint)
-                }
-                'Default' {
-                    $Script:Client.APICall($EndPoint)
+                Default {
+                    if ($PSBoundParameters.ContainsKey('Headers')) {
+                        $Script:Client.APICall($Method, $EndPoint, $Headers)
+                    }
+                    else {
+                        $Script:Client.APICall($Method, $EndPoint)
+                    }
                 }
             }
         }
