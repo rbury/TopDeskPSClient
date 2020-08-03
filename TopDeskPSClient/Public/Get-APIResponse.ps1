@@ -24,12 +24,6 @@ function Get-APIResponse {
         [string]
         $EndPoint,
         # Parameter help description
-        [Parameter(Mandatory = $true,
-            ValueFromPipelineByPropertyName = $true)]
-        [ValidateNotNullOrEmpty()]
-        [TopDeskPSClient]
-        $Client,
-        # Parameter help description
         [Parameter(Mandatory = $false,
             ParameterSetName = 'Body',
             ValueFromPipelineByPropertyName = $true)]
@@ -65,20 +59,20 @@ function Get-APIResponse {
             switch ($PSCmdlet.ParameterSetName) {
                 'Body' {
                     If ($PSBoundParameters.ContainsKey('Headers')) {
-                        $Client.APICall($Method, $Headers, $Body, $EndPoint)
+                        $Script:Client.APICall($Method, $Headers, $Body, $EndPoint)
                     }
                     else {
-                        $Client.APICall($Method, $EndPoint, $Body)
+                        $Script:Client.APICall($Method, $EndPoint, $Body)
                     }
                 }
                 'Header' {
-                    $Client.APICall($Method, $EndPoint, $Headers)
+                    $Script:Client.APICall($Method, $EndPoint, $Headers)
                 }
                 'Method' {
-                    $Client.APICall($Method, $EndPoint)
+                    $Script:Client.APICall($Method, $EndPoint)
                 }
                 'Default' {
-                    $Client.APICall($EndPoint)
+                    $Script:Client.APICall($EndPoint)
                 }
             }
         }

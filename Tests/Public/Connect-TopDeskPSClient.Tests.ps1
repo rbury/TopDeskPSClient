@@ -1,4 +1,4 @@
-Describe "Function New-TopDeskPSClient" {
+Describe "Function Connect-TopDeskPSClient" {
     
     BeforeAll {
         Set-BuildEnvironment -Path "$(Split-Path -Path $PSCommandPath -Parent)\..\.." -Force
@@ -13,7 +13,7 @@ Describe "Function New-TopDeskPSClient" {
         It "Should fail with connection error - credential" {
             $cred = New-Object -TypeName pscredential -ArgumentList @('tester',('testpass' | ConvertTo-SecureString -AsPlainText))
             try {
-                $testclient = New-TopDeskPSClient -url $url -PSCredential $cred
+                Connect-TopDeskPSClient -url $url -PSCredential $cred
             } catch {
                 $_ | Should -Be 'Connection Failed'
             }
@@ -21,7 +21,7 @@ Describe "Function New-TopDeskPSClient" {
         It "Should fail with validation - url" {
             $cred = New-Object -TypeName pscredential -ArgumentList @('tester',('testpass' | ConvertTo-SecureString -AsPlainText))
             try {
-                New-TopDeskPSClient -url 'http://baddomain' -PSCredential $cred
+                Connect-TopDeskPSClient -url 'http://baddomain' -PSCredential $cred
             }
             catch {
                 $_ | Should -Match "Cannot validate argument on parameter 'url'"

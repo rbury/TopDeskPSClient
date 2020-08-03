@@ -1,4 +1,6 @@
-function New-TopDeskPSClient {
+$Script:Client = [TopDeskPSClient]::new()
+
+function Connect-TopDeskPSClient {
     [cmdletBinding(DefaultParameterSetName = 'url',
         PositionalBinding = $false,
         SupportsShouldProcess,
@@ -50,18 +52,21 @@ function New-TopDeskPSClient {
         switch ($PSCmdlet.ParameterSetName) {
             'load' {
                 if ($Load) {
-                    return [TopDeskPSClient]::new($url, $true)
+                    $Script:Client = [TopDeskPSClient]::new($url, $true)
+                    return $true
                     break
                 }
             }
             'url' {
                 if ($Save) {
                     if ($PSCmdlet.ShouldProcess('New TopDeskClient', 'Save Credentials')) {
-                            return [TopDeskPSClient]::new($url, $PSCredential, $true)
+                            $Script:Client = [TopDeskPSClient]::new($url, $PSCredential, $true)
+                            return $true
                         }
                     }
                     else {
-                        return [TopDeskPSClient]::new($url, $PSCredential)
+                        $Script:Client = [TopDeskPSClient]::new($url, $PSCredential)
+                        return $true
                     }
                     break
                 }
