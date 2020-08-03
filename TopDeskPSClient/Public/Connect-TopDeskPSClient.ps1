@@ -1,6 +1,6 @@
 $Script:Client = [TopDeskPSClient]::new()
 
-function New-TopDeskPSClient {
+function Connect-TopDeskPSClient {
     [cmdletBinding(DefaultParameterSetName = 'url',
         PositionalBinding = $false,
         SupportsShouldProcess,
