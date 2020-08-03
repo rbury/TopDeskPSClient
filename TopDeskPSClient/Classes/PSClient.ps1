@@ -37,7 +37,9 @@ Class TopDeskPSClient {
     }
 
     TopDeskPSClient() {
-        $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new('url and credential are required', 'Please provide a url and credential to create client', [System.Management.Automation.ErrorCategory]::SyntaxError, $null))
+        $this.connected = $false
+        $this.url = ''
+        $this.instance = ''
     }
 
     TopDeskPSClient([string]$url, [bool]$load) {
@@ -52,7 +54,7 @@ Class TopDeskPSClient {
 
     [string] ToString() {
         return @(
-            'TopDeskPSClient', 'API: ' + $this.version, 'URL: ' + $this.url
+            'TopDeskPSClient', 'API: ' + $this.version, 'Product: ' + $this.productversion , 'URL: ' + $this.url
         )
     }
 
