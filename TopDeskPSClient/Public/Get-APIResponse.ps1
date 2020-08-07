@@ -5,11 +5,11 @@ function Get-APIResponse {
     [OutputType([psobject])]
     param (
         # Parameter help description
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory = $false,
             ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('GET', 'PUT', 'POST', 'PATCH', 'DELETE')]
         [string]
-        $Method,
+        $Method = 'GET',
         # Parameter help description
         [Parameter(Mandatory = $true,
             ValueFromPipelineByPropertyName = $true)]
