@@ -103,7 +103,7 @@ jobs:
         if: (matrix.os == 'ubuntu-latest')
         # Replace github action - Broken
         run: |
-          Invoke-ScriptAnalyzer -Path $env:BuildOutput -Settings pssa_settings.psd1
+          Invoke-ScriptAnalyzer -Path $env:BuildOutput -Settings pssa_settings.psd1 -Recurse -EnableExit -ReportSummary
         shell: pwsh
         #uses: devblackops/github-action-psscriptanalyzer@master
         #with:
