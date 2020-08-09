@@ -110,7 +110,7 @@ jobs:
         if: (matrix.os == 'ubuntu-latest')
         run: |
           Invoke-ScriptAnalyzer -Path $env:BuildOutput -Settings pssa_settings.psd1
-          shell: pwsh
+        shell: pwsh
         #uses: devblackops/github-action-psscriptanalyzer@master
         #with:
           #rootPath: BuildOutput
