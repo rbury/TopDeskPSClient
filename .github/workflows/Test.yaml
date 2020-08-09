@@ -1,7 +1,7 @@
 name: Test
 
 env:
-  RequiredModules: "InvokeBuild;5.6.0,Pester;5.0.2,BuildHelpers;2.0.11"
+  RequiredModules: "InvokeBuild;5.6.0,Pester;5.0.2,BuildHelpers;2.0.11,PSScriptAnalyzer;1.19.1"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 on:
