@@ -1,7 +1,7 @@
 name: Test
 
 env:
-  RequiredModules: "InvokeBuild;5.6.0,Pester;5.0.2,BuildHelpers;2.0.11"
+  RequiredModules: "InvokeBuild;5.6.0,Pester;5.0.2,BuildHelpers;2.0.11,PSScriptAnalyzer;1.19.1"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 on:
@@ -108,15 +108,18 @@ jobs:
       # Run PSScriptAnalyzer
       - name: Analyze Linux
         if: (matrix.os == 'ubuntu-latest')
-        uses: devblackops/github-action-psscriptanalyzer@master
-        with:
-          rootPath: BuildOutput
-          settingsPath: pssa_settings.psd1
-          sendComment: true
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          failOnErrors: true
-          failOnWarnings: true
-          failOnInfos: true
+        run: |
+          Invoke-ScriptAnalyzer -Path $env:BuildOutput -Settings pssa_settings.psd1
+        shell: pwsh
+        #uses: devblackops/github-action-psscriptanalyzer@master
+        #with:
+          #rootPath: BuildOutput
+          #settingsPath: pssa_settings.psd1
+          #sendComment: true
+          #repoToken: ${{ secrets.GITHUB_TOKEN }}
+          #failOnErrors: true
+          #failOnWarnings: true
+          #failOnInfos: true
 
       # Run Tests
       - name: Run Tests
