@@ -101,6 +101,7 @@ jobs:
       # Run PSScriptAnalyzer
       - name: Analyze Linux
         if: (matrix.os == 'ubuntu-latest')
+        # Replace github action - Broken
         run: |
           Invoke-ScriptAnalyzer -Path $env:BuildOutput -Settings pssa_settings.psd1
         shell: pwsh
