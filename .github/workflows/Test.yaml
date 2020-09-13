@@ -1,7 +1,7 @@
 name: Test
 
 env:
-  RequiredModules: "InvokeBuild;5.6.0,Pester;5.0.2,BuildHelpers;2.0.11,PSScriptAnalyzer;1.19.1"
+  RequiredModules: "InvokeBuild;5.6.2,Pester;5.0.4,BuildHelpers;2.0.15,PSScriptAnalyzer;1.19.1"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 on:
@@ -87,7 +87,7 @@ jobs:
                 Write-Output ("::set-env name={0}::{1}" -f $_,($buildenv.$_))
               }
         shell: pwsh
-      
+
       # Set Release Notes
       - name: Set Release Notes
         run: |
@@ -109,18 +109,18 @@ jobs:
       - name: Analyze Linux
         if: (matrix.os == 'ubuntu-latest')
         # Replace github action - Broken
-        run: |
-          Invoke-ScriptAnalyzer -Path $env:BuildOutput -Settings pssa_settings.psd1 -Recurse -EnableExit -ReportSummary
-        shell: pwsh
-        #uses: devblackops/github-action-psscriptanalyzer@master
-        #with:
-          #rootPath: BuildOutput
-          #settingsPath: pssa_settings.psd1
-          #sendComment: true
-          #repoToken: ${{ secrets.GITHUB_TOKEN }}
-          #failOnErrors: true
-          #failOnWarnings: true
-          #failOnInfos: true
+        #run: |
+          #Invoke-ScriptAnalyzer -Path $env:BuildOutput -Settings pssa_settings.psd1 -Recurse -EnableExit -ReportSummary
+        #shell: pwsh
+        uses: devblackops/github-action-psscriptanalyzer@master
+        with:
+          rootPath: BuildOutput
+          settingsPath: pssa_settings.psd1
+          sendComment: true
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          failOnErrors: true
+          failOnWarnings: true
+          failOnInfos: true
 
       # Run Tests
       - name: Run Tests
