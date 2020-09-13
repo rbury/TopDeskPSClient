@@ -433,8 +433,7 @@ function Get-IncidentList {
             }
         }
         if ($_endpoint.EndsWith('?')) {
-
-            $_endpoint = $_endpoint.Substring(0, ($_endpoint.Length) - 1)
+            $_endpoint = ($_endpoint -replace ".$")
         }
         Write-Warning ("Endpoint: {0}" -f $_endpoint)
         $IncidentList = Get-APIResponse -Method GET -Endpoint $_endpoint -Headers $_headerslist -Verbose
