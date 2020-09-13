@@ -2,7 +2,7 @@ name: CICD
 
 env:
   GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
-  RequiredModules: "InvokeBuild;5.6.0,Pester;5.0.2,BuildHelpers;2.0.11,PSScriptAnalyzer;1.19.1"
+  RequiredModules: "InvokeBuild;5.6.2,Pester;5.0.4,BuildHelpers;2.0.15,PSScriptAnalyzer;1.19.1"
 
 on:
   push:
