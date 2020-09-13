@@ -1,14 +1,9 @@
-[Flags()] enum incidentorder {
-    call_dateasc = 1
-    call_datedes = 2
-    creation_dateasc = 4
-    creation_datedes = 8
-    modification_dateasc = 16
-    modification_datedes = 32
-    target_dateasc = 64
-    target_datedes = 128
-    closed_dateasc = 256
-    closed_datedes = 512
+[Flags()] enum sortorder {
+    call_date = 1
+    creation_date = 2
+    modification_date = 4
+    target_date = 8
+    closed_date = 16
 }
 
 function Get-IncidentList {
@@ -31,9 +26,14 @@ function Get-IncidentList {
         $page_size,
         [Parameter(Mandatory = $false,
             ValueFromPipelineByPropertyName = $true,
-            HelpMessage = 'Order the retrieved incidents by these criteria: call_date, creation_date, modification_date, target_date, closed_date ascending or descending.')]
-        [incidentorder]
-        $order_by,
+            HelpMessage = 'Order the retrieved incidents by these criteria: call_date, creation_date, modification_date, target_date, closed_date in ascending order.')]
+        [sortorder]
+        $order_by_asc,
+        [Parameter(Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true,
+            HelpMessage = 'Order the retrieved incidents by these criteria: call_date, creation_date, modification_date, target_date, closed_date in descending order.')]
+        [sortorder]
+        $order_by_desc,
         [Parameter(Mandatory = $false,
             ValueFromPipelineByPropertyName = $true,
             HelpMessage = 'Retrieve only incidents that are completed / not completed')]
@@ -191,14 +191,14 @@ function Get-IncidentList {
         [string[]]
         $external_number
     )
-    
+
     begin {
         [hashtable]$_headerslist = @{
             'Content-Type' = 'application/json'
         }
         [string]$_endpoint = 'incidents?'
     }
-    
+
     process {
         foreach ($item in $PSBoundParameters.Keys) {
             switch ($item) {
@@ -210,17 +210,76 @@ function Get-IncidentList {
                     $_endpoint += '&page_size=' + $page_size
                     break
                 }
-                'order_by' {
+                'order_by_asc' {
                     $_endpoint += '&order_by='
                     $orderstring = ''
-                    foreach ($item in ($order_by -split (','))) {
-                        $newitem = $item.Substring(0, $($item.Length) - 3).Trim()
-                        $neworder = $item.Substring($($item.Length) - 3, 3)
-                        if ($neworder -eq 'des') {
-                            $neworder = 'desc'
+                    $remaining = $order_by_asc.value__
+                    do {
+                        if ($remaining -in @(1,2,4,8,16)) {
+                            $orderstring += [sortorder]::$order_by_asc + '+asc,'
+                            $remaining -= [sortorder]::$order_by_asc
+                        } else {
+                            If ($order_by_asc.HasFlag([sortorder]::call_date)) {
+                                $orderstring += [sortorder]::call_date + '+asc,'
+                                $remaining -= [sortorder]::call_date
+                            }
+                            If ($order_by_asc.HasFlag([sortorder]::creation_date)) {
+                                $orderstring += [sortorder]::creation_date + '+asc,'
+                                $remaining -= [sortorder]::creation_date
+                            }
+                            If ($order_by_asc.HasFlag([sortorder]::modification_date)) {
+                                $orderstring += [sortorder]::modification_date + '+asc,'
+                                $remaining -= [sortorder]::modification_date
+                            }
+                            If ($order_by_asc.HasFlag([sortorder]::target_date)) {
+                                $orderstring += [sortorder]::target_date + '+asc,'
+                                $remaining -= [sortorder]::target_date
+                            }
+                            If ($order_by_asc.HasFlag([sortorder]::closed_date)) {
+                                $orderstring += [sortorder]::closed_date + '+asc,'
+                                $remaining -= [sortorder]::closed_date
+                            }
                         }
-                        $orderstring += $newitem + '+' + $neworder + ','
+                    } while ($remaining -gt 0)
+                    $_endpoint += ($orderstring -replace ".$")
+                    break
+                }
+                'order_by_desc' {
+                    if(!($_endpoint -contains '&order_by=')) {
+                        $_endpoint += '&order_by='
                     }
+                    else {
+                        $_endpoint += ','
+                    }
+                    $orderstring = ''
+                    $remaining = $order_by_desc.value__
+                    do {
+                        if ($remaining -in @(1,2,4,8,16)) {
+                            $orderstring += [sortorder]::$order_by_desc + '+desc,'
+                            $remaining -= [sortorder]::$order_by_desc
+                        } else {
+                            If ($order_by_desc.HasFlag([sortorder]::call_date)) {
+                                $orderstring += [sortorder]::call_date + '+desc,'
+                                $remaining -= [sortorder]::call_date
+                            }
+                            If ($order_by_desc.HasFlag([sortorder]::creation_date)) {
+                                $orderstring += [sortorder]::creation_date + '+desc,'
+                                $remaining -= [sortorder]::creation_date
+                            }
+                            If ($order_by_desc.HasFlag([sortorder]::modification_date)) {
+                                $orderstring += [sortorder]::modification_date + '+desc,'
+                                $remaining -= [sortorder]::modification_date
+                            }
+                            If ($order_by_desc.HasFlag([sortorder]::target_date)) {
+                                $orderstring += [sortorder]::target_date + '+desc,'
+                                $remaining -= [sortorder]::target_date
+                            }
+                            If ($order_by_desc.HasFlag([sortorder]::closed_date)) {
+                                $orderstring += [sortorder]::closed_date + '+desc,'
+                                $remaining -= [sortorder]::closed_date
+                            }
+                        }
+                    } while ($remaining -gt 0)
                     $_endpoint += ($orderstring -replace ".$")
                     break
                 }
@@ -373,19 +432,21 @@ function Get-IncidentList {
                 }
             }
         }
-        if($_endpoint.EndsWith('?')) {
-            $_endpoint = $_endpoint.Substring(0,($_endpoint.Length)-1)
+        if ($_endpoint.EndsWith('?')) {
+
+            $_endpoint = $_endpoint.Substring(0, ($_endpoint.Length) - 1)
         }
         Write-Warning ("Endpoint: {0}" -f $_endpoint)
         $IncidentList = Get-APIResponse -Method GET -Endpoint $_endpoint -Headers $_headerslist -Verbose
-        if(($null -ne $IncidentList) -and (($IncidentList.StatusCode -eq 200) -or ($IncidentList.StatusCode -eq 206))) {
+        if (($null -ne $IncidentList) -and (($IncidentList.StatusCode -eq 200) -or ($IncidentList.StatusCode -eq 206))) {
             return $IncidentList.Data
-        } else {
+        }
+        else {
             return "Status: $($IncidentList.Status) Response: $($IncidentList.Response) StatusCode: $($IncidentList.StatusCode)"
         }
     }
-    
+
     end {
-        
+
     }
 }
