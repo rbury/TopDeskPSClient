@@ -441,7 +441,7 @@ function Get-IncidentList {
             return $IncidentList.Data
         }
         else {
-            return "Status: $($IncidentList.Status) Response: $($IncidentList.Response) StatusCode: $($IncidentList.StatusCode)"
+            return $IncidentList
         }
     }
 
