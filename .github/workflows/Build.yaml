@@ -2,7 +2,7 @@ name: CICD
 
 env:
   GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
-  RequiredModules: "InvokeBuild;5.6.2,Pester;5.0.4,BuildHelpers;2.0.15,PSScriptAnalyzer;1.19.1"
+  RequiredModules: "InvokeBuild;5.8.1,Pester;5.2.2,BuildHelpers;2.0.16,PSScriptAnalyzer;1.19.1"
 
 on:
   push:
@@ -87,7 +87,7 @@ jobs:
 
       # Set Version
       - name: Set Version
-        run: echo "PROJECT_VERSION="#{{ steps.compute_tag.outputs.next_tag }} >> $Env:GITHUB_ENV
+        run: echo "PROJECT_VERSION="#{{ steps.compute_tag.outputs.next_tag }} >> $GITHUB_ENV
         #run: echo "::set-env name=PROJECT_VERSION::"${{ steps.compute_tag.outputs.next_tag }}
 
       # Run Build Task
@@ -226,7 +226,7 @@ jobs:
 
       # Set Version
       - name: Set Version
-        run: echo "PROJECT_VERSION="${{ steps.compute_releasetag.outputs.previous_tag }} >> $Env:GITHUB_ENV
+        run: echo "PROJECT_VERSION="${{ steps.compute_releasetag.outputs.previous_tag }} >> $GITHUB_ENV
         #run: echo "::set-env name=PROJECT_VERSION::"${{ steps.compute_releasetag.outputs.previous_tag }}
 
       # Set Release Notes
