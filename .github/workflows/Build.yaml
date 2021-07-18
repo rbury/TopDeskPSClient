@@ -70,7 +70,7 @@ jobs:
           $buildenv = Get-BuildEnvironment
           $buildvars = ($buildenv | Get-Member -MemberType NoteProperty).name
           $buildvars | ForEach-Object {
-            Write-Output ("{0}={1}" -f $_,($buildenv.$_)) | Out-File -FilePath $GITHUB_ENV -Encoding utf8 -Append
+            Write-Output ("{0}={1}" -f $_,($buildenv.$_)) | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
             #Write-Output ("::set-env name={0}::{1}" -f $_,($buildenv.$_))
           }
         shell: pwsh
@@ -87,7 +87,7 @@ jobs:
 
       # Set Version
       - name: Set Version
-        run: echo "PROJECT_VERSION="#{{ steps.compute_tag.outputs.next_tag }} >> $GITHUB_ENV
+        run: echo "PROJECT_VERSION="#{{ steps.compute_tag.outputs.next_tag }} >> $Env:GITHUB_ENV
         #run: echo "::set-env name=PROJECT_VERSION::"${{ steps.compute_tag.outputs.next_tag }}
 
       # Run Build Task
@@ -209,7 +209,7 @@ jobs:
           $buildenv = Get-BuildEnvironment
           $buildvars = ($buildenv | Get-Member -MemberType NoteProperty).name
           $buildvars | ForEach-Object {
-            Write-Output ("{0}={1}" -f $_,($buildenv.$_)) | Out-File -FilePath $GITHUB_ENV -Encoding utf8 -Append
+            Write-Output ("{0}={1}" -f $_,($buildenv.$_)) | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
             #Write-Output ("::set-env name={0}::{1}" -f $_,($buildenv.$_))
           }
         shell: pwsh
@@ -226,14 +226,14 @@ jobs:
 
       # Set Version
       - name: Set Version
-        run: echo "PROJECT_VERSION="${{ steps.compute_releasetag.outputs.previous_tag }} >> $GITHUB_ENV
+        run: echo "PROJECT_VERSION="${{ steps.compute_releasetag.outputs.previous_tag }} >> $Env:GITHUB_ENV
         #run: echo "::set-env name=PROJECT_VERSION::"${{ steps.compute_releasetag.outputs.previous_tag }}
 
       # Set Release Notes
       - name: Set Release Notes
         run: |
           $rn = ((((Get-Content -Path ./ReleaseNotes.md -Raw) -Replace '## v0.0.0',('## '+$env:PROJECT_VERSION)) -Replace '%','%25') -Replace '\n','%0A') -Replace '\r','%0D'
-          Write-Output ("RELEASE_NOTES={0}" -f ($rn)) | Out-File -FilePath $GITHUB_ENV -Encoding utf8 -Append
+          Write-Output ("RELEASE_NOTES={0}" -f ($rn)) | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           ##Write-Output ("::set-env name=RELEASE_NOTES::{0}" -f ($rn))
         shell: pwsh
 
