@@ -70,14 +70,15 @@ jobs:
           $buildenv = Get-BuildEnvironment
           $buildvars = ($buildenv | Get-Member -MemberType NoteProperty).name
           $buildvars | ForEach-Object {
-            Write-Output ("::set-env name={0}::{1}" -f $_,($buildenv.$_))
+            Write-Output ("{0}={1}" -f $_,($buildenv.$_)) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+            #Write-Output ("::set-env name={0}::{1}" -f $_,($buildenv.$_))
           }
         shell: pwsh
 
       # Compute next Tag, defaults specified for clarity, version types - (major, minor, patch, prerelease, premajor)
       - id: Compute_Tag
-        #uses: craig-day/compute-tag@08233c8e763aa357c7930adf553f5b2cd8d29d1b
-        uses: ./.github/actions/compute-tag
+        uses: craig-day/compute-tag@v13
+        #uses: ./.github/actions/compute-tag
         with:
           github_token: ${{ secrets.MY_TOKEN }}
           version_scheme: semantic # continuous, semantic
@@ -86,7 +87,8 @@ jobs:
 
       # Set Version
       - name: Set Version
-        run: echo "::set-env name=PROJECT_VERSION::"${{ steps.compute_tag.outputs.next_tag }}
+        run: echo "PROJECT_VERSION="#{{ steps.compute_tag.outputs.next_tag }} >> $GITHUB_ENV
+        #run: echo "::set-env name=PROJECT_VERSION::"${{ steps.compute_tag.outputs.next_tag }}
 
       # Run Build Task
       - name: Build Project Linux
@@ -207,7 +209,8 @@ jobs:
           $buildenv = Get-BuildEnvironment
           $buildvars = ($buildenv | Get-Member -MemberType NoteProperty).name
           $buildvars | ForEach-Object {
-            Write-Output ("::set-env name={0}::{1}" -f $_,($buildenv.$_))
+            Write-Output ("{0}={1}" -f $_,($buildenv.$_)) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+            #Write-Output ("::set-env name={0}::{1}" -f $_,($buildenv.$_))
           }
         shell: pwsh
 
@@ -223,13 +226,15 @@ jobs:
 
       # Set Version
       - name: Set Version
-        run: echo "::set-env name=PROJECT_VERSION::"${{ steps.compute_releasetag.outputs.previous_tag }}
+        run: echo "PROJECT_VERSION="${{ steps.compute_releasetag.outputs.previous_tag }} >> $GITHUB_ENV
+        #run: echo "::set-env name=PROJECT_VERSION::"${{ steps.compute_releasetag.outputs.previous_tag }}
 
       # Set Release Notes
       - name: Set Release Notes
         run: |
           $rn = ((((Get-Content -Path ./ReleaseNotes.md -Raw) -Replace '## v0.0.0',('## '+$env:PROJECT_VERSION)) -Replace '%','%25') -Replace '\n','%0A') -Replace '\r','%0D'
-          Write-Output ("::set-env name=RELEASE_NOTES::{0}" -f ($rn))
+          Write-Output ("RELEASE_NOTES={0}" -f ($rn)) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          #Write-Output ("::set-env name=RELEASE_NOTES::{0}" -f ($rn))
         shell: pwsh
 
       # List env variables
