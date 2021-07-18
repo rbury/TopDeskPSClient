@@ -77,8 +77,8 @@ jobs:
 
       # Compute next Tag, defaults specified for clarity, version types - (major, minor, patch, prerelease, premajor)
       - id: Compute_Tag
-        uses: craig-day/compute-tag@v13
-        #uses: ./.github/actions/compute-tag
+        #uses: craig-day/compute-tag@08233c8e763aa357c7930adf553f5b2cd8d29d1b
+        uses: ./.github/actions/compute-tag
         with:
           github_token: ${{ secrets.MY_TOKEN }}
           version_scheme: semantic # continuous, semantic
