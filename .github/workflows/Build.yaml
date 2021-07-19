@@ -78,7 +78,7 @@ jobs:
           $buildvars | ForEach-Object {
           $envValue = "$($_)=$($buildenv.$_)"
           Write-Output ("Adding value: {0} to environment" -f $envValue)
-          if($_ -ne 'commit message') { echo "${$envValue}" >> $GITHUB_ENV #| Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append }
+          if($_ -ne 'CommitMessage') { echo "${$envValue}" >> $GITHUB_ENV #| Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append }
           }
         shell: pwsh
         
