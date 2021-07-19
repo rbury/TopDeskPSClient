@@ -77,8 +77,10 @@ jobs:
           $buildvars = ($buildenv | Get-Member -MemberType NoteProperty).name
           $buildvars | ForEach-Object {
           $envValue = "$($_)=$($buildenv.$_)"
-          Write-Output ("Adding value: {0} to environment" -f $envValue)
-          if($_ -ne 'CommitMessage') { echo "${$envValue}" >> $GITHUB_ENV } #| Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append }
+          if($envValue -notlike "CommitMessage*") {
+            Write-Output ("Adding value: {0} to environment" -f $envValue)
+            echo "${envValue}" >> $GITHUB_ENV
+          } #| Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append }
           }
         shell: pwsh
         
