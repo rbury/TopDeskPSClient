@@ -67,17 +67,21 @@ jobs:
               }
               Set-PSRepository PSGallery -InstallationPolicy $Policy
               $Modules | ForEach-Object { Import-Module -Name $_.split(';')[0] -RequiredVersion $_.split(';')[1] }
-              $buildenv = Get-BuildEnvironment
-              $buildvars = ($buildenv | Get-Member -MemberType NoteProperty).name
-              $buildvars | ForEach-Object {
-                $currentvar = $_
-                $buildvar = $buildenv.$_
-                Write-Output ("currentvar: {0}`r`nvalue:{1}" -f $currentvar,$buildvar)
-                echo "${currentvar}=${buildvar}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-                #Write-Output ("{0}={1}" -f $_,($buildenv.$_)) | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-              }
+              #Write-Output ("{0}={1}" -f $_,($buildenv.$_)) | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
         shell: pwsh
 
+      # Set Build Environment variables
+      - name: Set Env variables
+        run: |
+          $buildenv = Get-BuildEnvironment
+          $buildvars = ($buildenv | Get-Member -MemberType NoteProperty).name
+          $buildvars | ForEach-Object {
+          $envValue = "$($_)=$($buildenv.$_)"
+          Write-Output ("Adding value: {0} to environment" -f $envValue)
+          echo "${$envValue}" >> $GITHUB_ENV #| Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          }
+        shell: pwsh
+        
       # Compute next Tag, defaults specified for clarity, version types - (major, minor, patch, prerelease, premajor)
       - id: Compute_Tag
         uses: craig-day/compute-tag@v13
