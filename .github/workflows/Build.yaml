@@ -218,8 +218,8 @@ jobs:
               Install-Module -Name $Name -RequiredVersion $Version -Scope CurrentUser -Repository PSGallery -SkipPublisherCheck -ErrorAction SilentlyContinue -Force
             }
           }
-          Set-PSRepository PSGallery -InstallationPolicy $Policy
-          $Modules | ForEach-Object { Import-Module -Name $_.split(';')[0] -RequiredVersion $_.split(';')[1] }
+          #Set-PSRepository PSGallery -InstallationPolicy $Policy
+          $Modules | ForEach-Object { Import-Module -Name $_.split(';')[0] -RequiredVersion $_.split(';')[1] -Confirm:$false }
         shell: pwsh
         
       # Set Build Environment variables
