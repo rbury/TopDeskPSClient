@@ -48,7 +48,9 @@ function Connect-TopDeskPSClient {
         }
     }
     Process {
-
+        if (!(Invoke-WebRequest -Uri $url -UseBasicParsing | Select-Object statuscode).StatusCode -eq '200') {
+            $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new("Not able to reach URL, please check the address.", $null, [System.Management.Automation.ErrorCategory]::ConnectionError, $null))
+        }
         switch ($PSCmdlet.ParameterSetName) {
             'load' {
                 if ($Load) {
@@ -60,18 +62,18 @@ function Connect-TopDeskPSClient {
             'url' {
                 if ($Save) {
                     if ($PSCmdlet.ShouldProcess('New TopDeskClient', 'Save Credentials')) {
-                            $Script:Client = [TopDeskPSClient]::new($url, $PSCredential, $true)
-                            return $true
-                        }
-                    }
-                    else {
-                        $Script:Client = [TopDeskPSClient]::new($url, $PSCredential)
+                        $Script:Client = [TopDeskPSClient]::new($url, $PSCredential, $true)
                         return $true
                     }
-                    break
                 }
+                else {
+                    $Script:Client = [TopDeskPSClient]::new($url, $PSCredential)
+                    return $true
+                }
+                break
             }
         }
-        End {}
-
     }
+    End { }
+
+}
