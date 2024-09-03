@@ -266,7 +266,7 @@ jobs:
 
       # Download artifact uploaded by build
       - name: Download Archive
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: ${{ env.ProjectName }}
           path: ${{ env.BuildOutput }}
